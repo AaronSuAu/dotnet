@@ -6,10 +6,14 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+@if (ViewData["error"] != null)
+{
+    <p>@ViewData["error"]</p>
+} 
 @if (ViewData["url"] != null)
-    {
+{
     <p>The shortened url is @ViewData["url"]</p>
-    }
+}
 <form method="POST" action="/Home/Shorten">
     <div>
         <input name="url" type="text" placeholder="Type the url you want to short" style="width: 300px;">

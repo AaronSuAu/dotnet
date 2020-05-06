@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using shortLinkApp.Models;
 using shortLinkApp.DTO;
+using BitlyAPI;
+using shortLinkApp.Services;
 
 namespace shortLinkApp.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IShortenURLService _shortenURLService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IShortenURLService shortenURLService)
         {
             _logger = logger;
+            _shortenURLService = shortenURLService;
         }
 
         public IActionResult Index()
@@ -25,11 +29,15 @@ namespace shortLinkApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult Shorten(LinkForm model)
+        public async Task<ActionResult> Shorten(LinkForm model)
         {
-            string url = model.url;
-            Console.WriteLine(url);
-            ViewData["url"] = url;
+            if (!ModelState.IsValid)
+            {
+                ViewData["error"] = "URL is not valid, must start with http, https...";
+                return View("~/Views/Home/index.cshtml");
+            }
+
+            ViewData["url"] = await _shortenURLService.shortenUrl(model.url);
             return View("~/Views/Home/index.cshtml");
         }
 
